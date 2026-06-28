@@ -1,0 +1,27 @@
+---
+import { site } from "../data/site";
+
+// Normalize the current path (trailingSlash is "ignore" in astro.config).
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+
+function isActive(href: string): boolean {
+  const target = href.replace(/\/+$/, "") || "/";
+  if (target === "/") return path === "/";
+  return path === target || path.startsWith(target + "/");
+}
+---
+
+<nav class="site-nav" aria-label="Primary">
+  <div class="nav-inner">
+    <a class="nav-brand" href="/">{site.name}</a>
+    <div class="nav-links">
+      {
+        site.nav.map((item) => (
+          <a href={item.href} class:list={["nav-link", { active: isActive(item.href) }]}>
+            {item.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</nav>

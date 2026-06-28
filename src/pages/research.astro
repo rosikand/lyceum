@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Publications from "../components/Publications.astro";
+import { site } from "../data/site";
+---
+
+<BaseLayout title={`Research — ${site.name}`} description={`Publications by ${site.name}`}>
+  <Publications />
+</BaseLayout>

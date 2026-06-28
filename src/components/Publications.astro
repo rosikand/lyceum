@@ -1,0 +1,78 @@
+---
+import { publications } from "../data/publications";
+import PubItem from "./PubItem.astro";
+
+// Build the topic filter list from the topics actually used, in first-seen order.
+const topics: string[] = [];
+for (const pub of publications) {
+  for (const topic of pub.topics ?? []) {
+    if (!topics.includes(topic)) topics.push(topic);
+  }
+}
+---
+
+<section id="publications">
+  <div class="container">
+    <h2>Publications</h2>
+
+    <div class="pub-filters">
+      <span class="filter-label">Topic:</span>
+      <button class="filter-btn active" data-filter-topic="selected">Selected</button>
+      {
+        topics.map((topic) => (
+          <button class="filter-btn" data-filter-topic={topic}>
+            {topic}
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="pub-list" id="pub-list">
+      {publications.map((pub) => <PubItem pub={pub} />)}
+    </div>
+  </div>
+</section>
+
+<script>
+  // ---- Topic filtering ----
+  let active = "selected";
+  function applyFilter() {
+    document.querySelectorAll<HTMLElement>(".pub-item").forEach((item) => {
+      const topics = JSON.parse(item.dataset.topics || "[]") as string[];
+      const show =
+        (active === "selected" && item.dataset.selected === "true") ||
+        topics.includes(active);
+      item.hidden = !show;
+      item.classList.remove("entering");
+      if (show) {
+        void item.offsetWidth; // restart the enter animation
+        item.classList.add("entering");
+      }
+    });
+  }
+  applyFilter();
+  document.querySelectorAll<HTMLElement>("[data-filter-topic]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      active = btn.dataset.filterTopic || "selected";
+      document.querySelectorAll<HTMLElement>("[data-filter-topic]").forEach((b) => {
+        b.classList.toggle("active", b.dataset.filterTopic === active);
+      });
+      applyFilter();
+    });
+  });
+
+  // ---- BibTeX show/hide + copy ----
+  document.querySelectorAll<HTMLElement>(".bibtex-toggle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const box = document.getElementById(btn.dataset.target || "");
+      if (box) box.hidden = !box.hidden;
+    });
+  });
+  document.querySelectorAll<HTMLButtonElement>(".bibtex-copy").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(btn.dataset.bibtex || "");
+      btn.textContent = "Copied!";
+      setTimeout(() => (btn.textContent = "Copy"), 2000);
+    });
+  });
+</script>

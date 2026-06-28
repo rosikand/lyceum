@@ -1,0 +1,70 @@
+---
+import { site } from "../data/site";
+import type { Publication } from "../data/publications";
+
+interface Props {
+  pub: Publication;
+}
+const { pub } = Astro.props;
+
+// Bold your own name wherever it appears in the author list.
+const boldedAuthors = pub.authors.replaceAll(
+  site.name,
+  `<strong>${site.name}</strong>`
+);
+
+const bibtexId = `bibtex-${pub.key}`;
+const topicsAttr = JSON.stringify(pub.topics ?? []);
+---
+
+<div class="pub-item" data-topics={topicsAttr} data-selected={String(!!pub.selected)}>
+  <h3 class="pub-title">
+    {
+      pub.url ? (
+        <a href={pub.url} target="_blank" rel="noopener">
+          {pub.title}
+        </a>
+      ) : (
+        pub.title
+      )
+    }
+  </h3>
+
+  <p class="pub-authors" set:html={boldedAuthors} />
+
+  <p class="pub-venue">
+    <em>{pub.venue}</em>
+    {pub.award && <span class="pub-award"> — {pub.award}</span>}
+  </p>
+
+  {
+    (pub.links?.length || pub.bibtex) && (
+      <div class="pub-links">
+        {pub.links?.map((link) => (
+          <a class="pub-link" href={link.href} target="_blank" rel="noopener">
+            {link.label}
+          </a>
+        ))}
+        {pub.bibtex && (
+          <button class="pub-link bibtex-toggle" data-target={bibtexId}>
+            BibTeX
+          </button>
+        )}
+      </div>
+    )
+  }
+
+  {
+    pub.bibtex && (
+      <div class="bibtex-box" id={bibtexId} hidden>
+        <div class="bibtex-header">
+          <span class="bibtex-label">BibTeX</span>
+          <button class="bibtex-copy" data-bibtex={pub.bibtex}>
+            Copy
+          </button>
+        </div>
+        <pre class="bibtex-content">{pub.bibtex}</pre>
+      </div>
+    )
+  }
+</div>

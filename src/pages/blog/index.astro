@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import BlogList from "../../components/BlogList.astro";
+import { site } from "../../data/site";
+---
+
+<BaseLayout title={`Blog — ${site.name}`} description={`Writing by ${site.name}`}>
+  <BlogList />
+</BaseLayout>

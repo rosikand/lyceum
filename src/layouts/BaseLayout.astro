@@ -1,0 +1,61 @@
+---
+import { site } from "../data/site";
+import Nav from "../components/Nav.astro";
+import "../styles/global.css";
+
+interface Props {
+  /** Page <title>. Defaults to the site name. */
+  title?: string;
+  /** Meta description. Defaults to the site description. */
+  description?: string;
+}
+
+const { title = site.name, description = site.description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="author" content={site.name} />
+    <title>{title}</title>
+    <link rel="icon" href={site.favicon} type="image/png" />
+
+    <!-- Fonts: Source Sans 3 (body) + Roboto Mono (code / dates) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&family=Roboto+Mono&display=swap"
+      rel="stylesheet"
+    />
+
+    {/* Google Analytics — only loads if you set site.gaId, and never on localhost. */}
+    {
+      site.gaId && (
+        <script type="module" define:vars={{ gaId: site.gaId }}>
+          {`if (window.location.hostname !== "localhost") {
+            const s = document.createElement("script");
+            s.async = true;
+            s.src = "https://www.googletagmanager.com/gtag/js?id=" + gaId;
+            document.head.appendChild(s);
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag("js", new Date());
+            gtag("config", gaId);
+          }`}
+        </script>
+      )
+    }
+  </head>
+  <body>
+    <Nav />
+    <main>
+      <slot />
+    </main>
+    <footer>
+      <p>{site.name} &mdash; {site.affiliation}</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { site } from "../../data/site";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+// Table of contents from h2/h3 headings.
+const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+
+const dateLabel = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  timeZone: "UTC",
+}).format(post.data.date);
+---
+
+<BaseLayout title={`${post.data.title} — ${site.name}`} description={post.data.description}>
+  {
+    toc.length > 0 && (
+      <nav class="toc-sidebar">
+        <p class="toc-title">Contents</p>
+        <ol class="toc-list">
+          {toc.map((h) => (
+            <li style={`padding-left: ${(h.depth - 2) * 0.75}rem`}>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )
+  }
+
+  <article>
+    <div class="container">
+      <a class="back" href="/blog">← Blog</a>
+      <h1>{post.data.title}</h1>
+      <time class="date">{dateLabel}</time>
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<script>
+  // Highlight the table-of-contents entry for the section currently in view.
+  const links = new Map<string, HTMLAnchorElement>();
+  document.querySelectorAll<HTMLAnchorElement>(".toc-list a").forEach((a) => {
+    const id = a.getAttribute("href")?.slice(1);
+    if (id) links.set(id, a);
+  });
+
+  if (links.size > 0) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            links.forEach((a) => a.classList.remove("active"));
+            links.get(entry.target.id)?.classList.add("active");
+          }
+        }
+      },
+      { rootMargin: "0px 0px -75% 0px", threshold: 0 }
+    );
+
+    links.forEach((_, id) => {
+      const heading = document.getElementById(id);
+      if (heading) observer.observe(heading);
+    });
+  }
+</script>

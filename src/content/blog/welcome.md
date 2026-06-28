@@ -40,8 +40,9 @@ Inline images are centered and responsive by default:
 
 ![A placeholder illustration](/blog/placeholder.svg)
 
-You can also use small inline icons sized to the text
-<img src="/blog/placeholder.svg" alt="" class="icon"> like this.
+Markdown image paths that start with `/` are automatically prefixed with your
+site's base path, so they resolve whether the site is hosted at the domain root
+or under a subpath (e.g. a GitHub project page).
 
 ## Wrapping up
 

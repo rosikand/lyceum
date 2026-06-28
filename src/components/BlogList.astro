@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { withBase } from "../lib/withBase";
 
 const posts = (await getCollection("blog"))
   .filter((post) => !post.data.draft)
@@ -19,7 +20,7 @@ const fmt = (d: Date) => d.toISOString().slice(0, 10); // YYYY-MM-DD
               <time class="post-date" datetime={fmt(post.data.date)}>
                 {fmt(post.data.date)}
               </time>
-              <a class="post-title" href={`/blog/${post.id}`}>
+              <a class="post-title" href={withBase(`/blog/${post.id}`)}>
                 {post.data.title}
               </a>
             </li>

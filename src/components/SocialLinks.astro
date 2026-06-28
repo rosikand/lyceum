@@ -1,5 +1,6 @@
 ---
 import { site, type SocialLink } from "../data/site";
+import { withBase } from "../lib/withBase";
 
 // Inline SVG icon markup per link type (Font Awesome paths, MIT/CC-BY).
 const ICONS: Record<SocialLink["type"], string> = {
@@ -30,7 +31,7 @@ const links = site.social;
         </li>
       ) : (
         <li class="social-link">
-          <a href={link.value} target="_blank" rel="noopener" aria-label={link.label}>
+          <a href={withBase(link.value)} target="_blank" rel="noopener" aria-label={link.label}>
             <Fragment set:html={ICONS[link.type]} />
           </a>
         </li>

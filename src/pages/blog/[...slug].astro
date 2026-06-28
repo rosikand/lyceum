@@ -2,6 +2,7 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { site } from "../../data/site";
+import { withBase } from "../../lib/withBase";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -40,7 +41,7 @@ const dateLabel = new Intl.DateTimeFormat("en-US", {
 
   <article>
     <div class="container">
-      <a class="back" href="/blog">← Blog</a>
+      <a class="back" href={withBase("/blog")}>← Blog</a>
       <h1>{post.data.title}</h1>
       <time class="date">{dateLabel}</time>
       <div class="prose">

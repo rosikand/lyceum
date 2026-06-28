@@ -1,5 +1,6 @@
 ---
 import { site } from "../data/site";
+import { withBase } from "../lib/withBase";
 import SocialLinks from "./SocialLinks.astro";
 ---
 
@@ -9,7 +10,7 @@ import SocialLinks from "./SocialLinks.astro";
       <div class="profile-col">
         <img
           class="avatar"
-          src={site.avatar}
+          src={withBase(site.avatar)}
           alt={site.name}
           width="200"
           height="200"
